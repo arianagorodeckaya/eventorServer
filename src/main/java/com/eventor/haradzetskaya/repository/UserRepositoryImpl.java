@@ -33,6 +33,12 @@ public class UserRepositoryImpl implements UserRepository {
                 .orElse(null);
     }
 
+    @Override
+    public User saveUser(User user) {
+        Session session = entityManager.unwrap(Session.class);
+        session.saveOrUpdate(user);
+        return user;
+    }
 
     @Override
     public List<User> getAll() {
@@ -40,5 +46,4 @@ public class UserRepositoryImpl implements UserRepository {
         List<User> userList = session.createQuery("from User").getResultList();
         return userList;
     }
-
 }

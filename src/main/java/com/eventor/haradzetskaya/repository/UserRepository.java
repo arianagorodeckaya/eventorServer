@@ -8,4 +8,5 @@ public interface UserRepository {
 
     public User getByEmail(String login);
     public List<User> getAll();
+    public User saveUser(User user);
 }

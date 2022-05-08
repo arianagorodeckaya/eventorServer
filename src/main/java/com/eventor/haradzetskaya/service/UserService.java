@@ -5,8 +5,10 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 
 import java.util.List;
 
-public interface UserService {
+public interface UserService extends UserDetailsService {
 
     public List<User> getAll();
+    public User saveUser(User user);
     public User getByEmail(String email);
+    public User getByLoginAndPassword(String login, String password);
 }

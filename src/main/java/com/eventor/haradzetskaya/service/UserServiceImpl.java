@@ -21,6 +21,8 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     UserRepository userRepository;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @Override
     public List<User> getAll() {
@@ -30,6 +32,41 @@ public class UserServiceImpl implements UserService {
     @Override
     public User getByEmail(String login) {
         return this.userRepository.getByEmail(login);
+    }
+
+
+    @Override
+    public UserDetails loadUserByUsername(String login) throws UsernameNotFoundException {
+        User u = getByEmail(login);
+        if (Objects.isNull(u)) {
+            throw new UsernameNotFoundException(String.format("User %s is not found", login));
+        }
+        return new org.springframework.security.core.userdetails.User(u.getEmail(), u.getPw_hash(), getGrantedAuthority(u));
+    }
+
+    private Collection<GrantedAuthority> getGrantedAuthority(User user){
+        Collection<GrantedAuthority> authorities = new ArrayList<>();
+        if(user.getRole().equals(Role.ADMIN))
+            authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
+        else
+            authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
+        return authorities;
+    }
+
+    public User saveUser(User user) {
+        user.setRole(Role.ADMIN);
+        user.setPw_hash(passwordEncoder.encode(user.getPw_hash()));
+        return userRepository.saveUser(user);
+    }
+
+    public User getByLoginAndPassword(String email, String password) {
+        User user = getByEmail(email);
+        if (user != null) {
+            if (passwordEncoder.matches(password, user.getPw_hash())) {
+                return user;
+            }
+        }
+        return null;
     }
 
 }
