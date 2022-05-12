@@ -20,34 +20,33 @@ public class Event {
     private int id;
 
     @Column(name = "discription", nullable = false)
-    @NonNull
     private String discription;
 
     @Column(name = "image")
-    @NonNull
     private String image;
 
-    @Column(name = "location", nullable = false)
-    @NonNull
-    private float location;
+    //долгота
+    @Column(name = "longitude", nullable = false)
+    private float longitude;
+
+    //широта
+    @Column(name = "latitude", nullable = false)
+    private float latitude;
 
     @Column(name = "price", nullable = false)
     @NonNull
     private float price;
 
     @Column(name = "date_time", nullable = false)
-    @NonNull
     private Date date;
 
     //private float duration;
 
     @Column(name = "status", nullable = false)
-    @NonNull
     @Enumerated(EnumType.STRING)
     private Status status;
 
     @Column(name = "archive", nullable = false)
-    @NonNull
     private boolean archive;
 
     @Column(name = "confirmation")
@@ -67,15 +66,4 @@ public class Event {
     public Event() {
 
     }
-
-    public Event(@NonNull String discription, @NonNull float location, @NonNull float price, @NonNull Date date,  @NonNull Status status, @NonNull boolean archive, boolean confirmation, User creator) {
-        this.discription = discription;
-        this.location = location;
-        this.price = price;
-        this.date = date;
-        this.status = status;
-        this.archive = archive;
-        this.confirmation = confirmation;
-        this.creator = creator;
     }
-}
