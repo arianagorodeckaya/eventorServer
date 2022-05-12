@@ -19,19 +19,12 @@ public class User {
     private int id;
 
     @Column(name = "name", nullable = false)
-    @NonNull
     private String name;
 
-    @Column(name = "surname", nullable = false)
-    @NonNull
-    private String surname;
-
     @Column(name = "email", nullable = false)
-    @NonNull
     private String email;
 
-    @Column(name = "phone", nullable = false)
-    @NonNull
+    @Column(name = "phone")
     private String phone;
 
     @Column(name = "work")
@@ -45,12 +38,10 @@ public class User {
     private String photo;
 
     @Column(name = "role", nullable = false)
-    @NonNull
     @Enumerated(EnumType.STRING)
     private Role role;
 
     @Column(name = "pw_hash", nullable = false)
-    @NonNull
     private String pw_hash;
 
     @OneToMany(mappedBy = "creator", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -62,23 +53,16 @@ public class User {
     public User() {
     }
 
-    public User(@NonNull String name, @NonNull String surname, @NonNull String email, @NonNull String phone, String work, String birthday, @NonNull Role role, @NonNull String pw_hash) {
+    public User(String name, String email, String phone, String work, String birthday, String photo, Role role, String pw_hash) {
         this.name = name;
-        this.surname = surname;
         this.email = email;
         this.phone = phone;
         this.work = work;
         this.birthday = birthday;
+        this.photo = photo;
         this.role = role;
         this.pw_hash = pw_hash;
     }
-    public User(@NonNull String name, @NonNull String surname, @NonNull String email, @NonNull String phone, String work, String birthday,  @NonNull String pw_hash) {
-        this.name = name;
-        this.surname = surname;
-        this.email = email;
-        this.phone = phone;
-        this.work = work;
-        this.birthday = birthday;
-        this.pw_hash = pw_hash;
-    }
+
+
 }
