@@ -33,7 +33,22 @@ public class EventRepositoryImpl implements EventRepository{
     @Override
     @Transactional
     public List<Event> getAll() {
-        return null;
+        Session session = entityManager.unwrap(Session.class);
+        return session.createQuery("SELECT a FROM Event a", Event.class).getResultList();
+    }
+
+    @Override
+    @Transactional
+    public List<Event> getActiveAll() {
+        Session session = entityManager.unwrap(Session.class);
+        return session.createQuery("SELECT a FROM Event a where a.status='SCHEDULE'", Event.class).getResultList();
+    }
+
+    @Override
+    @Transactional
+    public List<Event> getExpiredAll() {
+        Session session = entityManager.unwrap(Session.class);
+        return session.createQuery("SELECT a FROM Event a where a.status='ENDED' or a.archive=true", Event.class).getResultList();
     }
 
     @Override
@@ -46,8 +61,23 @@ public class EventRepositoryImpl implements EventRepository{
 
     @Override
     @Transactional
-    public Event updateEvent(User user) {
-        return null;
+    public Event updateEvent(Event event) {
+        Session session = entityManager.unwrap(Session.class);
+        Event oldEvent = session.get(Event.class,event.getId());
+        oldEvent.setArchive(event.isArchive());
+        oldEvent.setConfirmation(event.isConfirmation());
+        oldEvent.setDate(event.getDate());
+        oldEvent.setDiscription(event.getDiscription());
+        oldEvent.setImage(event.getImage());
+        oldEvent.setPrice(event.getPrice());
+        oldEvent.setStatus(event.getStatus());
+//        oldUser.setEvents(user.getEvents());
+        oldEvent.setCreator(event.getCreator());
+        oldEvent.setLatitude(event.getLatitude());
+        oldEvent.setLongitude(event.getLongitude());
+        oldEvent.setUsers(event.getUsers());
+        session.update(oldEvent);
+        return oldEvent;
     }
 
     @Override

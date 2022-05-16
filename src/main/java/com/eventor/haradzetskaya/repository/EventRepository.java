@@ -8,7 +8,9 @@ import java.util.List;
 public interface EventRepository {
     public Event getById(int id);
     public List<Event> getAll();
+    public List<Event> getActiveAll();
+    public List<Event> getExpiredAll();
     public Event saveEvent(Event event);
-    public Event updateEvent(User user);
+    public Event updateEvent(Event event);
     public void deleteEvent(int id);
 }
