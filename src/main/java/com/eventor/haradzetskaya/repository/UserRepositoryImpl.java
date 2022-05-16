@@ -62,7 +62,7 @@ public class UserRepositoryImpl implements UserRepository {
         oldUser.setPhoto(user.getPhoto());
         oldUser.setWork(user.getWork());
 //        oldUser.setEvents(user.getEvents());
-//        oldUser.setCreatorEvents(user.getCreatorEvents());
+        oldUser.setCreatorEvents(user.getCreatorEvents());
         session.update(oldUser);
         return oldUser;
     }
