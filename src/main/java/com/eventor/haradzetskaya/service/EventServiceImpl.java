@@ -82,7 +82,7 @@ public class EventServiceImpl implements EventService{
 
     @Override
     public void deleteEvent(int id) {
-
+       eventRepository.deleteEvent(id);
     }
 
     @Override

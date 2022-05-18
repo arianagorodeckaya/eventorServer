@@ -71,7 +71,6 @@ public class EventRepositoryImpl implements EventRepository{
         oldEvent.setImage(event.getImage());
         oldEvent.setPrice(event.getPrice());
         oldEvent.setStatus(event.getStatus());
-//        oldUser.setEvents(user.getEvents());
         oldEvent.setCreator(event.getCreator());
         oldEvent.setLatitude(event.getLatitude());
         oldEvent.setLongitude(event.getLongitude());
@@ -83,6 +82,8 @@ public class EventRepositoryImpl implements EventRepository{
     @Override
     @Transactional
     public void deleteEvent(int id) {
-
+        Session session = entityManager.unwrap(Session.class);
+        Event event = session.get(Event.class,id);
+        session.delete(event);
     }
 }
