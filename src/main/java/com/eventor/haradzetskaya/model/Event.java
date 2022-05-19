@@ -19,6 +19,9 @@ public class Event {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
+    @Column(name = "name", nullable = false)
+    private String name;
+
     @Column(name = "discription", nullable = false)
     private String discription;
 
@@ -52,11 +55,8 @@ public class Event {
     @Column(name = "confirmation")
     private boolean confirmation;
 
-    @ManyToMany
-    @JoinTable(
-            name = "user_event",
-            joinColumns = @JoinColumn(name = "event_id"),
-            inverseJoinColumns = @JoinColumn(name = "user_id"))
+
+    @ManyToMany(mappedBy = "events")
     private List<User> users;
 
     @ManyToOne

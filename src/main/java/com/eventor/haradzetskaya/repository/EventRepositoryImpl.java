@@ -64,6 +64,7 @@ public class EventRepositoryImpl implements EventRepository{
     public Event updateEvent(Event event) {
         Session session = entityManager.unwrap(Session.class);
         Event oldEvent = session.get(Event.class,event.getId());
+        oldEvent.setName(event.getName());
         oldEvent.setArchive(event.isArchive());
         oldEvent.setConfirmation(event.isConfirmation());
         oldEvent.setDate(event.getDate());
