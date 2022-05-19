@@ -22,8 +22,8 @@ public class Event {
     @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(name = "discription", nullable = false)
-    private String discription;
+    @Column(name = "description", nullable = false)
+    private String description;
 
     @Column(name = "image")
     private String image;
@@ -66,4 +66,4 @@ public class Event {
     public Event() {
 
     }
-    }
+}
