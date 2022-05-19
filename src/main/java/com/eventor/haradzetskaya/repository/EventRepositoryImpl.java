@@ -68,14 +68,14 @@ public class EventRepositoryImpl implements EventRepository{
         oldEvent.setArchive(event.isArchive());
         oldEvent.setConfirmation(event.isConfirmation());
         oldEvent.setDate(event.getDate());
-        oldEvent.setDiscription(event.getDiscription());
+        oldEvent.setDescription(event.getDescription());
         oldEvent.setImage(event.getImage());
         oldEvent.setPrice(event.getPrice());
         oldEvent.setStatus(event.getStatus());
-        oldEvent.setCreator(event.getCreator());
+  //      oldEvent.setCreator(event.getCreator());
         oldEvent.setLatitude(event.getLatitude());
         oldEvent.setLongitude(event.getLongitude());
-        oldEvent.setUsers(event.getUsers());
+  //      oldEvent.setUsers(event.getUsers());
         session.update(oldEvent);
         return oldEvent;
     }
