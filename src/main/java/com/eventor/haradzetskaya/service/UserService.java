@@ -9,6 +9,7 @@ import java.util.List;
 public interface UserService extends UserDetailsService {
 
     public List<User> getAll();
+    public User getById(int id);
     public User saveUser(User user);
     public User saveAdmin(User user);
     public User getByEmail(String email);

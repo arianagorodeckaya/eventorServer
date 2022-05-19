@@ -12,10 +12,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -35,6 +32,10 @@ public class UserServiceImpl implements UserService {
         return this.userRepository.getByEmail(login);
     }
 
+    @Override
+    public User getById(int id) {
+        return this.userRepository.getById(id);
+    }
 
     @Override
     public UserDetails loadUserByUsername(String login) throws UsernameNotFoundException {
@@ -57,6 +58,9 @@ public class UserServiceImpl implements UserService {
     @Override
     public User saveUser(User user) {
         user.setRole(Role.USER);
+//        byte[] decodedBytes = Base64.getDecoder().decode(user.getPw_hash());
+//        String decodedString = new String(decodedBytes);
+//        user.setPw_hash(passwordEncoder.encode(decodedString));
         user.setPw_hash(passwordEncoder.encode(user.getPw_hash()));
         return userRepository.saveUser(user);
     }
@@ -64,8 +68,13 @@ public class UserServiceImpl implements UserService {
     @Override
     public User updateUser(User user) {
         User oldUser = userRepository.getById(user.getId());
-            if (oldUser.getPw_hash().equals(passwordEncoder.encode(user.getPw_hash()))) {
-                user.setPw_hash(passwordEncoder.encode(user.getPw_hash()));
+//        byte[] decodedBytes = Base64.getDecoder().decode(user.getPw_hash());
+//        String decodedString = new String(decodedBytes);
+//        if (oldUser.getPw_hash().equals(passwordEncoder.encode(decodedString))) {
+//                user.setPw_hash(passwordEncoder.encode(decodedString));
+//        }
+        if (oldUser.getPw_hash().equals(passwordEncoder.encode(user.getPw_hash()))) {
+            user.setPw_hash(passwordEncoder.encode(user.getPw_hash()));
         }
         return userRepository.updateUser(user);
     }
@@ -73,6 +82,9 @@ public class UserServiceImpl implements UserService {
     @Override
     public User saveAdmin(User user) {
         user.setRole(Role.ADMIN);
+//        byte[] decodedBytes = Base64.getDecoder().decode(user.getPw_hash());
+//        String decodedString = new String(decodedBytes);
+//        user.setPw_hash(passwordEncoder.encode(decodedString));
         user.setPw_hash(passwordEncoder.encode(user.getPw_hash()));
         return userRepository.saveUser(user);
     }
@@ -80,6 +92,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void deleteUser(int id) {
         userRepository.deleteUser(id);
+
     }
 
     @Override
