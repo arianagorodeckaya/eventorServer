@@ -20,7 +20,7 @@ public class AdminController {
     private PasswordEncoder passwordEncoder;
 
 
-    @GetMapping(path = "/users", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(path = "/users")
     public  @ResponseBody
     List<User> getAll() {
         List<User> users = this.userService.getAll();
@@ -33,12 +33,12 @@ public class AdminController {
         return users;
     }
 
-    @DeleteMapping(path = "/user", produces = MediaType.APPLICATION_JSON_VALUE)
+    @DeleteMapping(path = "/user")
     void deleteUser(@RequestBody User user) {
         userService.deleteUser(user.getId());
     }
 
-    @PostMapping(path = "/save", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(path = "/save")
     User saveUser(@RequestBody User newUser) {
         return userService.saveAdmin(newUser);
     }

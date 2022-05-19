@@ -3,6 +3,7 @@ package com.eventor.haradzetskaya.controller;
 import com.eventor.haradzetskaya.model.JwtRequest;
 import com.eventor.haradzetskaya.model.JwtResponse;
 import com.eventor.haradzetskaya.model.User;
+import com.eventor.haradzetskaya.myEnum.Role;
 import com.eventor.haradzetskaya.security.JwtTokenUtil;
 import com.eventor.haradzetskaya.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -24,8 +26,10 @@ public class AuthController {
     private AuthenticationManager authenticationManager;
     @Autowired
     private JwtTokenUtil jwtTokenUtil;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
-    @PostMapping(path = "/api/login", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(path = "/api/login")
     public ResponseEntity<?> createAuthenticationToken(@RequestBody JwtRequest authenticationRequest) throws Exception {
         authenticate(authenticationRequest.getUsername(), authenticationRequest.getPassword());
 
@@ -37,8 +41,12 @@ public class AuthController {
     }
 
 
-    @PostMapping(path = "/api/registration", produces = MediaType.APPLICATION_JSON_VALUE)
+    //@PostMapping(path = "/api/registration", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(path = "/api/registration")
     void saveUser(@RequestBody User newUser) {
+        newUser.setRole(Role.USER);
+        newUser.setId(0);
+        newUser.setPw_hash(passwordEncoder.encode(newUser.getPw_hash()));
         userService.saveUser(newUser);
     }
 

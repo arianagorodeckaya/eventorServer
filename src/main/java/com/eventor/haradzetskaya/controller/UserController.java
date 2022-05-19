@@ -25,20 +25,21 @@ public class UserController {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping
     public User getUser(@RequestBody User inpUser) {
         User outUser = this.userService.getByEmail(inpUser.getEmail());
-        if(outUser==null)
+        if(outUser==null) {
             throw new NotFoundException("User with email not found - " + inpUser.getEmail());
+        }
         outUser.setCreatorEvents(userService.setOnlyIdForUser(outUser));
         for (Event event:outUser.getEvents()) {
             event.setUsers(this.eventService.setOnlyIdForUsers(event));
-            event.setCreator(eventService.setOnlyIdForCreator(event.getCreator()));
+            event.setCreator(this.eventService.setOnlyIdForCreator(event.getCreator()));
         }
         return outUser;
     }
 
-    @GetMapping(path = "/me", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(path = "/me")
     public User getMyUser() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         User user = userService.getByEmail(auth.getName());
@@ -50,12 +51,12 @@ public class UserController {
         return user;
     }
 
-    @PutMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping
     User updateUser(@RequestBody User user) {
         return userService.updateUser(user);
     }
 
-    @DeleteMapping(path = "/me", produces = MediaType.APPLICATION_JSON_VALUE)
+    @DeleteMapping(path = "/me")
     ResponseEntity<?>  deleteMyUser() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String email = auth.getName();
@@ -66,7 +67,7 @@ public class UserController {
         return ResponseEntity.ok(new ErrorResponse(HttpStatus.OK.value(), "User was deleted", System.currentTimeMillis()));
     }
 
-    @DeleteMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    @DeleteMapping
     ResponseEntity<?>  deleteUser(@RequestBody User user) {
         userService.deleteUser(user.getId());
         if(userService.getById(user.getId())!=null)
