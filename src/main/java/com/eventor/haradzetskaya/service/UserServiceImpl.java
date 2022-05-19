@@ -21,6 +21,8 @@ public class UserServiceImpl implements UserService {
     UserRepository userRepository;
     @Autowired
     private PasswordEncoder passwordEncoder;
+    @Autowired
+    EventService eventService;
 
     @Override
     public List<User> getAll() {
@@ -61,7 +63,7 @@ public class UserServiceImpl implements UserService {
 //        byte[] decodedBytes = Base64.getDecoder().decode(user.getPw_hash());
 //        String decodedString = new String(decodedBytes);
 //        user.setPw_hash(passwordEncoder.encode(decodedString));
-        user.setPw_hash(passwordEncoder.encode(user.getPw_hash()));
+//        user.setPw_hash(passwordEncoder.encode(user.getPw_hash()));
         return userRepository.saveUser(user);
     }
 
@@ -115,6 +117,7 @@ public class UserServiceImpl implements UserService {
             User newUser = new User();
             newUser.setId(id);
             event.setCreator(newUser);
+            event.setUsers(this.eventService.setOnlyIdForUsers(event));
             newEvents.add(event);
         }
         return newEvents;
