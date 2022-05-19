@@ -25,7 +25,7 @@ public class AuthController {
     @Autowired
     private JwtTokenUtil jwtTokenUtil;
 
-    @PostMapping(path = "/login", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(path = "/api/login", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> createAuthenticationToken(@RequestBody JwtRequest authenticationRequest) throws Exception {
         authenticate(authenticationRequest.getUsername(), authenticationRequest.getPassword());
 
@@ -37,7 +37,7 @@ public class AuthController {
     }
 
 
-    @PostMapping(path = "/registration", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(path = "/api/registration", produces = MediaType.APPLICATION_JSON_VALUE)
     void saveUser(@RequestBody User newUser) {
         userService.saveUser(newUser);
     }

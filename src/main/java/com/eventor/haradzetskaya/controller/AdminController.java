@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/admin")
+@RequestMapping("/api/admin")
 public class AdminController {
 
     @Autowired
@@ -20,7 +20,7 @@ public class AdminController {
     private PasswordEncoder passwordEncoder;
 
 
-    @GetMapping(path = "/user/all", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(path = "/users", produces = MediaType.APPLICATION_JSON_VALUE)
     public  @ResponseBody
     List<User> getAll() {
         List<User> users = this.userService.getAll();
@@ -33,7 +33,7 @@ public class AdminController {
         return users;
     }
 
-    @PostMapping(path = "/user/delete", produces = MediaType.APPLICATION_JSON_VALUE)
+    @DeleteMapping(path = "/user", produces = MediaType.APPLICATION_JSON_VALUE)
     void deleteUser(@RequestBody User user) {
         userService.deleteUser(user.getId());
     }

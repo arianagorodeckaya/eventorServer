@@ -1,20 +1,22 @@
 package com.eventor.haradzetskaya.controller;
 
+import com.eventor.haradzetskaya.exceptionHandler.NotFoundException;
+import com.eventor.haradzetskaya.model.ErrorResponse;
 import com.eventor.haradzetskaya.model.Event;
 import com.eventor.haradzetskaya.model.User;
 import com.eventor.haradzetskaya.service.EventService;
 import com.eventor.haradzetskaya.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
-@RequestMapping("/user")
+@RequestMapping("/api/user")
 public class UserController {
     @Autowired
     UserService userService;
@@ -26,6 +28,8 @@ public class UserController {
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
     public User getUser(@RequestBody User inpUser) {
         User outUser = this.userService.getByEmail(inpUser.getEmail());
+        if(outUser==null)
+            throw new NotFoundException("User with email not found - " + inpUser.getEmail());
         outUser.setCreatorEvents(userService.setOnlyIdForUser(outUser));
         for (Event event:outUser.getEvents()) {
             event.setUsers(this.eventService.setOnlyIdForUsers(event));
@@ -38,8 +42,8 @@ public class UserController {
     public User getMyUser() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         User user = userService.getByEmail(auth.getName());
-       user.setCreatorEvents(userService.setOnlyIdForUser(user));
-        for (Event event:user.getEvents()) {
+        user.setCreatorEvents(userService.setOnlyIdForUser(user));
+        for (Event event : user.getEvents()) {
             event.setUsers(this.eventService.setOnlyIdForUsers(event));
             event.setCreator(eventService.setOnlyIdForCreator(event.getCreator()));
         }
@@ -52,16 +56,21 @@ public class UserController {
     }
 
     @DeleteMapping(path = "/me", produces = MediaType.APPLICATION_JSON_VALUE)
-    User deleteMyUser() {
+    ResponseEntity<?>  deleteMyUser() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        User user = userService.getByEmail(auth.getName());
+        String email = auth.getName();
+        User user = userService.getByEmail(email);
         userService.deleteUser(user.getId());
-        return user;
+        if(userService.getByEmail(email)!=null)
+            return ResponseEntity.ok(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), "User wasn't deleted", System.currentTimeMillis()));
+        return ResponseEntity.ok(new ErrorResponse(HttpStatus.OK.value(), "User was deleted", System.currentTimeMillis()));
     }
 
     @DeleteMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-    User deleteUser(@RequestBody User user) {
+    ResponseEntity<?>  deleteUser(@RequestBody User user) {
         userService.deleteUser(user.getId());
-        return user;
+        if(userService.getById(user.getId())!=null)
+            return ResponseEntity.ok(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), "User wasn't deleted", System.currentTimeMillis()));
+        return ResponseEntity.ok(new ErrorResponse(HttpStatus.OK.value(), "User was deleted", System.currentTimeMillis()));
     }
 }
