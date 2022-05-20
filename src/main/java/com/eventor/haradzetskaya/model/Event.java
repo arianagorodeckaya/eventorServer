@@ -1,7 +1,6 @@
 package com.eventor.haradzetskaya.model;
 
 
-import com.eventor.haradzetskaya.myEnum.Status;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NonNull;
@@ -40,21 +39,17 @@ public class Event {
     @NonNull
     private float price;
 
-    @Column(name = "date_time", nullable = false)
-    private Date date;
+    @Column(name = "start_date_time", nullable = false)
+    private Date startDate;
 
-    //private float duration;
-
-    @Column(name = "status", nullable = false)
-    @Enumerated(EnumType.STRING)
-    private Status status;
+    @Column(name = "end_date_time", nullable = false)
+    private Date endDate;
 
     @Column(name = "archive", nullable = false)
     private boolean archive;
 
     @Column(name = "confirmation")
     private boolean confirmation;
-
 
     @ManyToMany(mappedBy = "events")
     private List<User> users;
