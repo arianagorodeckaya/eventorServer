@@ -5,6 +5,9 @@ import com.eventor.haradzetskaya.model.User;
 import com.eventor.haradzetskaya.repository.EventRepository;
 import com.eventor.haradzetskaya.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -19,24 +22,19 @@ public class EventServiceImpl implements EventService{
     UserRepository userRepository;
 
     @Override
-    public List<Event> getAll() {
-        return null;
-    }
-
-    @Override
     public List<Event> getActiveAll() {
-        return eventRepository.getActiveAll();
+        return eventRepository.findActiveAll();
     }
 
     @Override
     public List<Event> getExpiredAll() {
-        return eventRepository.getExpiredAll();
+        return eventRepository.findExpiredAll();
     }
 
     @Override
     public List<Event> getMyActiveAll(String email) {
-        List<Event> events = eventRepository.getActiveAll();
-        User myUser = userRepository.getByEmail(email);
+        List<Event> events = eventRepository.findActiveAll();
+        User myUser = userRepository.findByEmail(email);
         List<Event> myActiveEvents = new ArrayList<>();
         for (Event event:events) {
             for (User user: event.getUsers()) {
@@ -51,8 +49,8 @@ public class EventServiceImpl implements EventService{
 
     @Override
     public List<Event> getMyExpiredAll(String email) {
-        List<Event> events = eventRepository.getExpiredAll();
-        User myUser = userRepository.getByEmail(email);
+        List<Event> events = eventRepository.findExpiredAll();
+        User myUser = userRepository.findByEmail(email);
         List<Event> myExpiredEvents = new ArrayList<>();
         for (Event event:events) {
             for (User user: event.getUsers()) {
@@ -72,7 +70,7 @@ public class EventServiceImpl implements EventService{
 
     @Override
     public Event getById(int id) {
-        return eventRepository.getById(id);
+        return eventRepository.findById(id);
     }
 
     @Override
@@ -104,5 +102,17 @@ public class EventServiceImpl implements EventService{
         User newUser = new User();
         newUser.setId(id);
         return newUser;
+    }
+
+    @Override
+    public Page<Event> getConfirmedAll(int page) {
+        Pageable pageable = PageRequest.of(page, 20);
+        return eventRepository.findConfirmedAll(pageable);
+    }
+
+    @Override
+    public Page<Event> getUnconfirmedAll(int page) {
+        Pageable pageable = PageRequest.of(page, 20);
+        return eventRepository.findUnconfirmedAll(pageable);
     }
 }
