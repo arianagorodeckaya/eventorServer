@@ -11,9 +11,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -64,5 +67,25 @@ public class AdminController {
         newUser.setId(0);
         newUser.setPw_hash(passwordEncoder.encode(newUser.getPw_hash()));
         return userService.saveUser(newUser);
+    }
+
+    @PostMapping(path = "/approve")
+    Event approveEvent(@RequestBody Event event) {
+        Event oldEvent = eventService.getById(event.getId());
+        oldEvent.setConfirmation(true);
+        Event newEvent = eventService.saveEvent(oldEvent);
+        newEvent.setUsers(this.eventService.setOnlyIdForUsers(newEvent));
+        newEvent.setCreator(this.eventService.setOnlyIdForCreator(newEvent.getCreator()));
+        return newEvent;
+    }
+
+    @PostMapping(path = "/decline")
+    Event declineEvent(@RequestBody Event event) {
+        Event oldEvent = eventService.getById(event.getId());
+        oldEvent.setConfirmation(false);
+        Event newEvent = eventService.saveEvent(oldEvent);
+        newEvent.setUsers(this.eventService.setOnlyIdForUsers(newEvent));
+        newEvent.setCreator(this.eventService.setOnlyIdForCreator(newEvent.getCreator()));
+        return newEvent;
     }
 }
