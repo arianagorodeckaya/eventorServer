@@ -19,4 +19,5 @@ public interface EventService {
     public User setOnlyIdForCreator(User user);
     public Page<Event> getConfirmedAll(int page);
     public Page<Event> getUnconfirmedAll(int page);
+    public Page<Event> getNullConfirmedEvents(int page);
 }

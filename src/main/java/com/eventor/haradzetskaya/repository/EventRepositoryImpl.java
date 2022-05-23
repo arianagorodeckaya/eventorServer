@@ -98,4 +98,19 @@ public class EventRepositoryImpl implements EventRepository{
 
         return new PageImpl<Event>(events, pageable, count);
     }
+
+    @Override
+    public Page<Event> findNullConfirmedEvents(Pageable pageable){
+        Query query = entityManager.createQuery("select a from Event a where a.confirmation is NULL ");
+        int pageNumber = pageable.getPageNumber();
+        int pageSize = pageable.getPageSize();
+        query.setFirstResult((pageNumber) * pageSize);
+        query.setMaxResults(pageSize);
+        List<Event> events = query.getResultList();
+
+        Query queryCount = entityManager.createQuery("Select count(a.id) From Event a where a.confirmation is NULL ");
+        long count = (long) queryCount.getSingleResult();
+
+        return new PageImpl<Event>(events, pageable, count);
+    }
 }

@@ -69,7 +69,7 @@ public class EventServiceImpl implements EventService{
             Event oldEvent = eventRepository.findById(event.getId());
             oldEvent.setName(event.getName());
             oldEvent.setArchive(event.isArchive());
-            oldEvent.setConfirmation(event.isConfirmation());
+            oldEvent.setConfirmation(event.getConfirmation());
             oldEvent.setStartDate(event.getStartDate());
             oldEvent.setEndDate(event.getEndDate());
             oldEvent.setDescription(event.getDescription());
@@ -127,5 +127,11 @@ public class EventServiceImpl implements EventService{
     public Page<Event> getUnconfirmedAll(int page) {
         Pageable pageable = PageRequest.of(page, 20);
         return eventRepository.findUnconfirmedAll(pageable);
+    }
+
+    @Override
+    public Page<Event> getNullConfirmedEvents(int page) {
+        Pageable pageable = PageRequest.of(page, 20);
+        return eventRepository.findNullConfirmedEvents(pageable);
     }
 }

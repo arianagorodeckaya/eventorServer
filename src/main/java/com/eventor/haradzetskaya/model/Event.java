@@ -49,7 +49,7 @@ public class Event {
     private boolean archive;
 
     @Column(name = "confirmation")
-    private boolean confirmation;
+    private Boolean confirmation;
 
     @ManyToMany(mappedBy = "events")
     private List<User> users;

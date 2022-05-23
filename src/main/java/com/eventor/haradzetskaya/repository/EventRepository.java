@@ -16,4 +16,5 @@ public interface EventRepository {
     public void deleteEvent(int id);
     public Page<Event> findConfirmedAll(Pageable pageable);
     public Page<Event> findUnconfirmedAll(Pageable pageable);
+    public Page<Event> findNullConfirmedEvents(Pageable pageable);
 }

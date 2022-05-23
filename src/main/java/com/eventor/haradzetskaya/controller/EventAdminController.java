@@ -39,4 +39,14 @@ public class EventAdminController {
         return events;
     }
 
+    @GetMapping(path = "/nullconfirmed")
+    public Page<Event> getAllNullConfirmedEvent(@RequestParam(defaultValue = "0") int page) {
+        Page<Event> events = this.eventService.getNullConfirmedEvents(page);
+        for (Event event:events) {
+            event.setUsers(this.eventService.setOnlyIdForUsers(event));
+            event.setCreator(eventService.setOnlyIdForCreator(event.getCreator()));
+        }
+        return events;
+    }
+
 }
