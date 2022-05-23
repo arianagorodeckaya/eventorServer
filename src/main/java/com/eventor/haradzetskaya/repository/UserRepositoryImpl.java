@@ -1,8 +1,12 @@
 package com.eventor.haradzetskaya.repository;
 
+import com.eventor.haradzetskaya.model.Event;
 import com.eventor.haradzetskaya.model.User;
 import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
@@ -25,7 +29,7 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     @Transactional
-    public User getByEmail(String email) {
+    public User findByEmail(String email) {
         Session session = entityManager.unwrap(Session.class);
         List<User> userList = session.createQuery("from User").getResultList();
         return userList.stream()
@@ -36,7 +40,7 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     @Transactional
-    public User getById(int id) {
+    public User findById(int id) {
         Session session = entityManager.unwrap(Session.class);
         return session.get(User.class,id);
     }
@@ -59,9 +63,17 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     @Transactional
-    public List<User> getAll() {
-        Session session = entityManager.unwrap(Session.class);
-        List<User> userList = session.createQuery("from User").getResultList();
-        return userList;
+    public Page<User> findAll(Pageable pageable) {
+        Query query = entityManager.createQuery("select a from User a");
+        int pageNumber = pageable.getPageNumber();
+        int pageSize = pageable.getPageSize();
+        query.setFirstResult((pageNumber) * pageSize);
+        query.setMaxResults(pageSize);
+        List<User> users = query.getResultList();
+
+        Query queryCount = entityManager.createQuery("Select count(a.id) From User a");
+        long count = (long) queryCount.getSingleResult();
+
+        return new PageImpl<User>(users, pageable, count);
     }
 }

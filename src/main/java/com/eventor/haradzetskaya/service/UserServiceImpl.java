@@ -5,6 +5,9 @@ import com.eventor.haradzetskaya.model.User;
 import com.eventor.haradzetskaya.myEnum.Role;
 import com.eventor.haradzetskaya.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -25,18 +28,19 @@ public class UserServiceImpl implements UserService {
     EventService eventService;
 
     @Override
-    public List<User> getAll() {
-        return this.userRepository.getAll();
+    public Page<User> getAll(int page) {
+        Pageable pageable = PageRequest.of(page, 20);
+        return this.userRepository.findAll(pageable);
     }
 
     @Override
     public User getByEmail(String login) {
-        return this.userRepository.getByEmail(login);
+        return this.userRepository.findByEmail(login);
     }
 
     @Override
     public User getById(int id) {
-        return this.userRepository.getById(id);
+        return this.userRepository.findById(id);
     }
 
     @Override
@@ -60,7 +64,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public User saveUser(User user) {
         if(user.getId()!=0){
-            User oldUser = userRepository.getById(user.getId());
+            User oldUser = userRepository.findById(user.getId());
             oldUser.setName(user.getName());
             if (oldUser.getPw_hash().equals(passwordEncoder.encode(user.getPw_hash())))
                 oldUser.setPw_hash(user.getPw_hash());
