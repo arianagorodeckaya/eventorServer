@@ -62,27 +62,6 @@ public class EventRepositoryImpl implements EventRepository{
 
     @Override
     @Transactional
-    public Event updateEvent(Event event) {
-        Session session = entityManager.unwrap(Session.class);
-        Event oldEvent = session.get(Event.class,event.getId());
-        oldEvent.setName(event.getName());
-        oldEvent.setArchive(event.isArchive());
-        oldEvent.setConfirmation(event.isConfirmation());
-        oldEvent.setStartDate(event.getStartDate());
-        oldEvent.setEndDate(event.getEndDate());
-        oldEvent.setDescription(event.getDescription());
-        oldEvent.setImage(event.getImage());
-        oldEvent.setPrice(event.getPrice());
-        oldEvent.setCreator(event.getCreator());
-        oldEvent.setLatitude(event.getLatitude());
-        oldEvent.setLongitude(event.getLongitude());
-        oldEvent.setUsers(event.getUsers());
-        session.update(oldEvent);
-        return oldEvent;
-    }
-
-    @Override
-    @Transactional
     public void deleteEvent(int id) {
         Session session = entityManager.unwrap(Session.class);
         Event event = session.get(Event.class,id);

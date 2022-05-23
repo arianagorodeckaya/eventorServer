@@ -13,7 +13,6 @@ public interface EventRepository {
     public List<Event> findActiveAll();
     public List<Event> findExpiredAll();
     public Event saveEvent(Event event);
-    public Event updateEvent(Event event);
     public void deleteEvent(int id);
     public Page<Event> findConfirmedAll(Pageable pageable);
     public Page<Event> findUnconfirmedAll(Pageable pageable);

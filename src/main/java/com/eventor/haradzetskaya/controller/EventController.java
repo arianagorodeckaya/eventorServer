@@ -29,7 +29,8 @@ public class EventController {
         Event outEvent = this.eventService.getById(inpEvent.getId());
         if(outEvent==null)
             throw new NotFoundException("Event with id not found - " + inpEvent.getId());
-        outEvent.setUsers(this.eventService.setOnlyIdForUsers(outEvent));
+        if(outEvent.getUsers()!=null)
+            outEvent.setUsers(this.eventService.setOnlyIdForUsers(outEvent));
         outEvent.setCreator(this.eventService.setOnlyIdForCreator(outEvent.getCreator()));
         return outEvent;
     }
@@ -38,7 +39,8 @@ public class EventController {
     public List<Event> getAllActiveEvent() {
         List<Event> events = this.eventService.getActiveAll();
         for (Event event:events) {
-            event.setUsers(this.eventService.setOnlyIdForUsers(event));
+            if(event.getUsers()!=null)
+                event.setUsers(this.eventService.setOnlyIdForUsers(event));
             event.setCreator(eventService.setOnlyIdForCreator(event.getCreator()));
         }
         return events;
@@ -49,7 +51,8 @@ public class EventController {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         List<Event> events = this.eventService.getMyActiveAll(auth.getName());
         for (Event event:events) {
-            event.setUsers(this.eventService.setOnlyIdForUsers(event));
+            if(event.getUsers()!=null)
+                event.setUsers(this.eventService.setOnlyIdForUsers(event));
             event.setCreator(eventService.setOnlyIdForCreator(event.getCreator()));
         }
         return events;
@@ -60,16 +63,28 @@ public class EventController {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         List<Event> events = this.eventService.getMyExpiredAll(auth.getName());
         for (Event event:events) {
-            event.setUsers(this.eventService.setOnlyIdForUsers(event));
+            if(event.getUsers()!=null)
+                event.setUsers(this.eventService.setOnlyIdForUsers(event));
             event.setCreator(eventService.setOnlyIdForCreator(event.getCreator()));
         }
         return events;
+    }
+
+    @GetMapping(path = "/subscribers")
+    public List<User> getSubscribersEvent(@RequestBody Event inpEvent) {
+        List<User> subscribers = this.eventService.getById(inpEvent.getId()).getUsers();
+        for (User user: subscribers) {
+            user.setCreatorEvents(null);
+            user.setEvents(null);
+        }
+        return subscribers;
     }
 
     @PostMapping
     ResponseEntity<?> saveEvent(@RequestBody Event newEvent) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         User user = userService.getByEmail(auth.getName());
+        newEvent.setId(0);
         newEvent.setCreator(user);
         newEvent.setArchive(false);
         eventService.saveEvent(newEvent);
@@ -87,12 +102,16 @@ public class EventController {
         }
         else
             users.add(user);
-        eventService.updateEvent(newEvent);
+        eventService.saveEvent(newEvent);
     }
 
     @PutMapping
     Event updateEvent(@RequestBody Event event) {
-        return eventService.updateEvent(event);
+        Event newEvent = eventService.saveEvent(event);
+        if(newEvent.getUsers()!=null)
+            newEvent.setUsers(this.eventService.setOnlyIdForUsers(newEvent));
+        newEvent.setCreator(this.eventService.setOnlyIdForCreator(newEvent.getCreator()));
+        return newEvent;
     }
 
     @DeleteMapping
