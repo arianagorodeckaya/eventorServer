@@ -2,6 +2,7 @@ package com.eventor.haradzetskaya.controller;
 
 import com.eventor.haradzetskaya.model.Event;
 import com.eventor.haradzetskaya.model.User;
+import com.eventor.haradzetskaya.myEnum.Role;
 import com.eventor.haradzetskaya.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -40,6 +41,9 @@ public class AdminController {
 
     @PostMapping(path = "/save")
     User saveUser(@RequestBody User newUser) {
-        return userService.saveAdmin(newUser);
+        newUser.setRole(Role.ADMIN);
+        newUser.setId(0);
+        newUser.setPw_hash(passwordEncoder.encode(newUser.getPw_hash()));
+        return userService.saveUser(newUser);
     }
 }

@@ -51,24 +51,6 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     @Transactional
-    public User updateUser(User user) {
-        Session session = entityManager.unwrap(Session.class);
-        User oldUser = session.get(User.class,user.getId());
-        oldUser.setName(user.getName());
-        oldUser.setPw_hash(user.getPw_hash());
-        oldUser.setEmail(user.getEmail());
-        oldUser.setBirthday(user.getBirthday());
-        oldUser.setPhone(user.getPhone());
-        oldUser.setPhoto(user.getPhoto());
-        oldUser.setWork(user.getWork());
-//        oldUser.setEvents(user.getEvents());
-        oldUser.setCreatorEvents(user.getCreatorEvents());
-        session.update(oldUser);
-        return oldUser;
-    }
-
-    @Override
-    @Transactional
     public void deleteUser(int id){
         Session session = entityManager.unwrap(Session.class);
         User user = session.get(User.class,id);

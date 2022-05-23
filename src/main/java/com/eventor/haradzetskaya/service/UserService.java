@@ -11,10 +11,8 @@ public interface UserService extends UserDetailsService {
     public List<User> getAll();
     public User getById(int id);
     public User saveUser(User user);
-    public User saveAdmin(User user);
     public User getByEmail(String email);
     public User getByLoginAndPassword(String login, String password);
-    public User updateUser(User user);
     public void deleteUser(int id);
     public List<Event> setOnlyIdForUser(User user);
 }

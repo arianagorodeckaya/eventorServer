@@ -7,7 +7,6 @@ import com.eventor.haradzetskaya.myEnum.Role;
 import com.eventor.haradzetskaya.security.JwtTokenUtil;
 import com.eventor.haradzetskaya.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -41,7 +40,6 @@ public class AuthController {
     }
 
 
-    //@PostMapping(path = "/api/registration", produces = MediaType.APPLICATION_JSON_VALUE)
     @PostMapping(path = "/api/registration")
     void saveUser(@RequestBody User newUser) {
         newUser.setRole(Role.USER);

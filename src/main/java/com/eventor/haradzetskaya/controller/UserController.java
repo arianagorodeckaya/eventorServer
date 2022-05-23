@@ -53,7 +53,7 @@ public class UserController {
 
     @PutMapping
     User updateUser(@RequestBody User user) {
-        return userService.updateUser(user);
+        return userService.saveUser(user);
     }
 
     @DeleteMapping(path = "/me")

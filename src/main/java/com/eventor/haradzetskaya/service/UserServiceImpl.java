@@ -59,36 +59,25 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User saveUser(User user) {
-        user.setRole(Role.USER);
-//        byte[] decodedBytes = Base64.getDecoder().decode(user.getPw_hash());
-//        String decodedString = new String(decodedBytes);
-//        user.setPw_hash(passwordEncoder.encode(decodedString));
-//        user.setPw_hash(passwordEncoder.encode(user.getPw_hash()));
-        return userRepository.saveUser(user);
-    }
-
-    @Override
-    public User updateUser(User user) {
-        User oldUser = userRepository.getById(user.getId());
-//        byte[] decodedBytes = Base64.getDecoder().decode(user.getPw_hash());
-//        String decodedString = new String(decodedBytes);
-//        if (oldUser.getPw_hash().equals(passwordEncoder.encode(decodedString))) {
-//                user.setPw_hash(passwordEncoder.encode(decodedString));
-//        }
-        if (oldUser.getPw_hash().equals(passwordEncoder.encode(user.getPw_hash()))) {
-            user.setPw_hash(passwordEncoder.encode(user.getPw_hash()));
+        if(user.getId()!=0){
+            User oldUser = userRepository.getById(user.getId());
+            oldUser.setName(user.getName());
+            if (oldUser.getPw_hash().equals(passwordEncoder.encode(user.getPw_hash())))
+                oldUser.setPw_hash(user.getPw_hash());
+            else
+                oldUser.setPw_hash(passwordEncoder.encode(user.getPw_hash()));
+            oldUser.setPw_hash(user.getPw_hash());
+            oldUser.setEmail(user.getEmail());
+            oldUser.setBirthday(user.getBirthday());
+            oldUser.setPhone(user.getPhone());
+            oldUser.setPhoto(user.getPhoto());
+            oldUser.setWork(user.getWork());
+            user = oldUser;
         }
-        return userRepository.updateUser(user);
-    }
-
-    @Override
-    public User saveAdmin(User user) {
-        user.setRole(Role.ADMIN);
-//        byte[] decodedBytes = Base64.getDecoder().decode(user.getPw_hash());
-//        String decodedString = new String(decodedBytes);
-//        user.setPw_hash(passwordEncoder.encode(decodedString));
-        user.setPw_hash(passwordEncoder.encode(user.getPw_hash()));
-        return userRepository.saveUser(user);
+        userRepository.saveUser(user);
+        user.setCreatorEvents(null);
+        user.setEvents(null);
+        return user;
     }
 
     @Override
