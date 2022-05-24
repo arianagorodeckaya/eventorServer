@@ -20,4 +20,5 @@ public interface EventService {
     public Page<Event> getConfirmedAll(int page);
     public Page<Event> getUnconfirmedAll(int page);
     public Page<Event> getNullConfirmedEvents(int page);
+    public Page<Event> getAllEvents(int page);
 }

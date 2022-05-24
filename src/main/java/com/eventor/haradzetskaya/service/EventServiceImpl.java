@@ -134,4 +134,10 @@ public class EventServiceImpl implements EventService{
         Pageable pageable = PageRequest.of(page, 20);
         return eventRepository.findNullConfirmedEvents(pageable);
     }
+
+    @Override
+    public Page<Event> getAllEvents(int page) {
+        Pageable pageable = PageRequest.of(page, 20);
+        return eventRepository.findAll(pageable);
+    }
 }

@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface EventRepository {
     public Event findById(int id);
-    public List<Event> findAll();
+    public Page<Event> findAll(Pageable pageable);
     public List<Event> findActiveAll();
     public List<Event> findExpiredAll();
     public Event saveEvent(Event event);

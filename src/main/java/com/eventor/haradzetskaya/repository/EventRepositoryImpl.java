@@ -33,9 +33,20 @@ public class EventRepositoryImpl implements EventRepository{
 
     @Override
     @Transactional
-    public List<Event> findAll() {
-        Session session = entityManager.unwrap(Session.class);
-        return session.createQuery("SELECT a FROM Event a", Event.class).getResultList();
+    public Page<Event> findAll(Pageable pageable) {
+
+        Query query = entityManager.createQuery("SELECT a FROM Event a");
+        int pageNumber = pageable.getPageNumber();
+        int pageSize = pageable.getPageSize();
+        query.setFirstResult((pageNumber) * pageSize);
+        query.setMaxResults(pageSize);
+        List<Event> events = query.getResultList();
+
+        Query queryCount = entityManager.createQuery("Select count(a.id) From Event a");
+        long count = (long) queryCount.getSingleResult();
+
+        return new PageImpl<Event>(events, pageable, count);
+
     }
 
     @Override

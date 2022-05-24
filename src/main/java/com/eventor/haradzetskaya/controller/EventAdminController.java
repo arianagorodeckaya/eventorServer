@@ -20,7 +20,7 @@ public class EventAdminController {
     UserService userService;
 
     @GetMapping(path = "/confirmed")
-    public Page<Event> getAllConfirmedEvent(@RequestParam(defaultValue = "0") int page) {
+    public Page<Event> getAllConfirmedEvents(@RequestParam(defaultValue = "0") int page) {
         Page<Event> events = this.eventService.getConfirmedAll(page);
         for (Event event:events) {
             event.setUsers(this.eventService.setOnlyIdForUsers(event));
@@ -30,7 +30,7 @@ public class EventAdminController {
     }
 
     @GetMapping(path = "/unconfirmed")
-    public Page<Event> getAllUnconfirmedEvent(@RequestParam(defaultValue = "0") int page) {
+    public Page<Event> getAllUnconfirmedEvents(@RequestParam(defaultValue = "0") int page) {
         Page<Event> events = this.eventService.getUnconfirmedAll(page);
         for (Event event:events) {
             event.setUsers(this.eventService.setOnlyIdForUsers(event));
@@ -40,8 +40,18 @@ public class EventAdminController {
     }
 
     @GetMapping(path = "/nullconfirmed")
-    public Page<Event> getAllNullConfirmedEvent(@RequestParam(defaultValue = "0") int page) {
+    public Page<Event> getAllNullConfirmedEvents(@RequestParam(defaultValue = "0") int page) {
         Page<Event> events = this.eventService.getNullConfirmedEvents(page);
+        for (Event event:events) {
+            event.setUsers(this.eventService.setOnlyIdForUsers(event));
+            event.setCreator(eventService.setOnlyIdForCreator(event.getCreator()));
+        }
+        return events;
+    }
+
+    @GetMapping(path = "/all")
+    public Page<Event> getAllEvents(@RequestParam(defaultValue = "0") int page) {
+        Page<Event> events = this.eventService.getAllEvents(page);
         for (Event event:events) {
             event.setUsers(this.eventService.setOnlyIdForUsers(event));
             event.setCreator(eventService.setOnlyIdForCreator(event.getCreator()));
