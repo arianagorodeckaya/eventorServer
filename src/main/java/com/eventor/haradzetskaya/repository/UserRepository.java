@@ -13,4 +13,5 @@ public interface UserRepository {
     public Page<User> findAll(Pageable pageable);
     public User saveUser(User user);
     public void deleteUser(int id);
+    public Long countUsers();
 }

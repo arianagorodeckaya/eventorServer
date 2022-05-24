@@ -76,4 +76,9 @@ public class UserRepositoryImpl implements UserRepository {
 
         return new PageImpl<User>(users, pageable, count);
     }
+
+    @Override
+    public Long countUsers() {
+        return (Long) entityManager.createQuery("Select count(a.id) From User a").getSingleResult();
+    }
 }

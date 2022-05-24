@@ -116,4 +116,8 @@ public class UserServiceImpl implements UserService {
         return newEvents;
     }
 
+    @Override
+    public Long getCountUsers() {
+        return userRepository.countUsers();
+    }
 }

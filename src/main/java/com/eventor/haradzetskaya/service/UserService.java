@@ -16,4 +16,5 @@ public interface UserService extends UserDetailsService {
     public User getByLoginAndPassword(String login, String password);
     public void deleteUser(int id);
     public List<Event> setOnlyIdForUser(User user);
+    public Long getCountUsers();
 }
