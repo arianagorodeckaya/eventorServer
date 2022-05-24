@@ -51,8 +51,8 @@ public class AdminController {
     }
 
     @GetMapping(path = "/user")
-    User getUser(@RequestBody User user) {
-        User outUser = userService.getById(user.getId());
+    User getUser(@RequestParam int id) {
+        User outUser = userService.getById(id);
         outUser.setCreatorEvents(userService.setOnlyIdForUser(outUser));
         for (Event event : outUser.getEvents()) {
             event.setUsers(this.eventService.setOnlyIdForUsers(event));

@@ -25,10 +25,10 @@ public class EventController {
     UserService userService;
 
     @GetMapping
-    public Event getEvent(@RequestBody Event inpEvent) {
-        Event outEvent = this.eventService.getById(inpEvent.getId());
+    public Event getEvent(@RequestParam int id) {
+        Event outEvent = this.eventService.getById(id);
         if(outEvent==null)
-            throw new NotFoundException("Event with id not found - " + inpEvent.getId());
+            throw new NotFoundException("Event with id not found - " + id);
         if(outEvent.getUsers()!=null)
             outEvent.setUsers(this.eventService.setOnlyIdForUsers(outEvent));
         outEvent.setCreator(this.eventService.setOnlyIdForCreator(outEvent.getCreator()));
@@ -59,7 +59,7 @@ public class EventController {
     }
 
     @GetMapping(path = "/my/expired")
-    public List<Event> getMyExpiredEvent(@RequestBody Event inpEvent) {
+    public List<Event> getMyExpiredEvent() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         List<Event> events = this.eventService.getMyExpiredAll(auth.getName());
         for (Event event:events) {
@@ -71,8 +71,8 @@ public class EventController {
     }
 
     @GetMapping(path = "/subscribers")
-    public List<User> getSubscribersEvent(@RequestBody Event inpEvent) {
-        List<User> subscribers = this.eventService.getById(inpEvent.getId()).getUsers();
+    public List<User> getSubscribersEvent(@RequestParam int id) {
+        List<User> subscribers = this.eventService.getById(id).getUsers();
         for (User user: subscribers) {
             user.setCreatorEvents(null);
             user.setEvents(null);

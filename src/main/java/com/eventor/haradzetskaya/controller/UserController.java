@@ -26,31 +26,20 @@ public class UserController {
     private PasswordEncoder passwordEncoder;
 
     @GetMapping
-    public User getUser(@RequestBody User inpUser) {
+    public User getUser(@RequestParam int id) {
         User outUser;
-        if(inpUser.getEmail()!=null) {
-            outUser = this.userService.getByEmail(inpUser.getEmail());
-            if (outUser == null) {
-                throw new NotFoundException("User with email not found - " + inpUser.getEmail());
-            }
+        outUser = this.userService.getById(id);
+        if (outUser == null) {
+            throw new NotFoundException("User with id not found - " + id);
         }
-        else{
-            outUser = this.userService.getById(inpUser.getId());
-            if (outUser == null) {
-                throw new NotFoundException("User with id not found - " + inpUser.getId());
-            }
+        outUser.setCreatorEvents(userService.setOnlyIdForUser(outUser));
+        for (Event event : outUser.getEvents()) {
+            event.setUsers(this.eventService.setOnlyIdForUsers(event));
+            event.setCreator(this.eventService.setOnlyIdForCreator(event.getCreator()));
         }
-
-            outUser.setCreatorEvents(userService.setOnlyIdForUser(outUser));
-            for (Event event : outUser.getEvents()) {
-                event.setUsers(this.eventService.setOnlyIdForUsers(event));
-                event.setCreator(this.eventService.setOnlyIdForCreator(event.getCreator()));
-            }
 
         return outUser;
     }
-
-
 
     @GetMapping(path = "/me")
     public User getMyUser() {
