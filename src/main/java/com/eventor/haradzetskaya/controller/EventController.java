@@ -70,6 +70,19 @@ public class EventController {
         return events;
     }
 
+    @GetMapping(path = "/subscriptions")
+    public List<Event> getMySubscriptions() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        User myUser = this.userService.getByEmail(auth.getName());
+        List<Event> events = myUser.getEvents();
+        for (Event event:events) {
+            if(event.getUsers()!=null)
+                event.setUsers(this.eventService.setOnlyIdForUsers(event));
+            event.setCreator(eventService.setOnlyIdForCreator(event.getCreator()));
+        }
+        return events;
+    }
+
     @GetMapping(path = "/subscribers")
     public List<User> getSubscribersEvent(@RequestParam int id) {
         List<User> subscribers = this.eventService.getById(id).getUsers();

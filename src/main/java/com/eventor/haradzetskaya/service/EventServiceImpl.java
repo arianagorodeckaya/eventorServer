@@ -33,33 +33,15 @@ public class EventServiceImpl implements EventService{
 
     @Override
     public List<Event> getMyActiveAll(String email) {
-        List<Event> events = eventRepository.findActiveAll();
         User myUser = userRepository.findByEmail(email);
-        List<Event> myActiveEvents = new ArrayList<>();
-        for (Event event:events) {
-            for (User user: event.getUsers()) {
-                if(user.equals(myUser)) {
-                    myActiveEvents.add(event);
-                    break;
-                }
-            }
-        }
+        List<Event> myActiveEvents = eventRepository.findMyActiveAll(myUser.getId());
         return myActiveEvents;
     }
 
     @Override
     public List<Event> getMyExpiredAll(String email) {
-        List<Event> events = eventRepository.findExpiredAll();
         User myUser = userRepository.findByEmail(email);
-        List<Event> myExpiredEvents = new ArrayList<>();
-        for (Event event:events) {
-            for (User user: event.getUsers()) {
-                if(user.equals(myUser)) {
-                    myExpiredEvents.add(event);
-                    break;
-                }
-            }
-        }
+        List<Event> myExpiredEvents = eventRepository.findMyExpiredAll(myUser.getId());
         return myExpiredEvents;
     }
 

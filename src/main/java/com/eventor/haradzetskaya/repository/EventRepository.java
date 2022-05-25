@@ -23,4 +23,6 @@ public interface EventRepository {
     public Long countInProcess();
     public Long countEnded();
     public Long countEvents();
+    public List<Event> findMyActiveAll(int id);
+    public List<Event> findMyExpiredAll(int id);
 }
