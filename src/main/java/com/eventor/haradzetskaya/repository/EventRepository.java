@@ -17,4 +17,10 @@ public interface EventRepository {
     public Page<Event> findConfirmedAll(Pageable pageable);
     public Page<Event> findUnconfirmedAll(Pageable pageable);
     public Page<Event> findNullConfirmedEvents(Pageable pageable);
+    public Long countFree();
+    public Long countPaid();
+    public Long countScheduled();
+    public Long countInProcess();
+    public Long countEnded();
+    public Long countEvents();
 }

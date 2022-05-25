@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.transaction.Transactional;
+import java.util.Date;
 import java.util.List;
 
 @Repository
@@ -123,5 +124,42 @@ public class EventRepositoryImpl implements EventRepository{
         long count = (long) queryCount.getSingleResult();
 
         return new PageImpl<Event>(events, pageable, count);
+    }
+
+    @Override
+    public Long countFree() {
+        return (Long) entityManager.createQuery("Select count(a.id) From Event a where a.price=0").getSingleResult();
+    }
+
+    @Override
+    public Long countPaid() {
+        return (Long) entityManager.createQuery("Select count(a.id) From Event a where a.price<>0").getSingleResult();
+    }
+
+    @Override
+    public Long countScheduled() {
+        Query query = entityManager.createQuery("Select count(a.id) from Event a where a.startDate > :now");
+        query.setParameter("now", new Date());
+        return (Long) query.getSingleResult();
+    }
+
+    @Override
+    public Long countInProcess() {
+        Query query = entityManager.createQuery("Select count(a.id) from Event a where a.startDate < :now and" +
+                " a.endDate > :now");
+        query.setParameter("now", new Date());
+        return (Long) query.getSingleResult();
+    }
+
+    @Override
+    public Long countEnded() {
+        Query query = entityManager.createQuery("Select count(a.id) from Event a where a.endDate < :now");
+        query.setParameter("now", new Date());
+        return (Long) query.getSingleResult();
+    }
+
+    @Override
+    public Long countEvents() {
+        return (Long) entityManager.createQuery("Select count(a.id) From Event a").getSingleResult();
     }
 }

@@ -140,4 +140,34 @@ public class EventServiceImpl implements EventService{
         Pageable pageable = PageRequest.of(page, 20);
         return eventRepository.findAll(pageable);
     }
+
+    @Override
+    public Long getCountFree() {
+        return eventRepository.countFree();
+    }
+
+    @Override
+    public Long getCountPaid() {
+        return eventRepository.countPaid();
+    }
+
+    @Override
+    public Long getCountScheduled() {
+        return eventRepository.countScheduled();
+    }
+
+    @Override
+    public Long getCountInProcess() {
+        return eventRepository.countInProcess();
+    }
+
+    @Override
+    public Long getCountEnded() {
+        return eventRepository.countEnded();
+    }
+
+    @Override
+    public Long getCountEvents() {
+        return eventRepository.countEvents();
+    }
 }
