@@ -11,6 +11,7 @@ public interface EventRepository {
     public Event findById(int id);
     public Page<Event> findAll(Pageable pageable);
     public List<Event> findActiveAll();
+    public List<Event> findActiveAndApprovedAll();
     public List<Event> findExpiredAll();
     public Event saveEvent(Event event);
     public void deleteEvent(int id);

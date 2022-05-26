@@ -59,6 +59,13 @@ public class EventRepositoryImpl implements EventRepository{
 
     @Override
     @Transactional
+    public List<Event> findActiveAndApprovedAll() {
+        Session session = entityManager.unwrap(Session.class);
+        return session.createNativeQuery("Select * from event where event.end_date_time/1000 >= CAST(strftime('%s',datetime('now')) as integer) and event.confirmation=true", Event.class).getResultList();
+    }
+
+    @Override
+    @Transactional
     public List<Event> findExpiredAll() {
         Session session = entityManager.unwrap(Session.class);
         return session.createNativeQuery("Select * from event where event.end_date_time/1000 < CAST(strftime('%s',datetime('now')) as integer)",Event.class).getResultList();

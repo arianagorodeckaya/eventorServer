@@ -37,7 +37,7 @@ public class EventController {
 
     @GetMapping(path = "/all/active")
     public List<Event> getAllActiveEvent() {
-        List<Event> events = this.eventService.getActiveAll();
+        List<Event> events = this.eventService.getActiveAndApprovedAll();
         for (Event event:events) {
             if(event.getUsers()!=null)
                 event.setUsers(this.eventService.setOnlyIdForUsers(event));

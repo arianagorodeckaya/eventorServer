@@ -27,4 +27,5 @@ public interface EventService {
     public Long getCountInProcess();
     public Long getCountEnded();
     public Long getCountEvents();
+    public List<Event> getActiveAndApprovedAll();
 }

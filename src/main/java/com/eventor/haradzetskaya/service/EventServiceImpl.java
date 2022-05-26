@@ -27,6 +27,11 @@ public class EventServiceImpl implements EventService{
     }
 
     @Override
+    public List<Event> getActiveAndApprovedAll() {
+        return eventRepository.findActiveAndApprovedAll();
+    }
+
+    @Override
     public List<Event> getExpiredAll() {
         return eventRepository.findExpiredAll();
     }
