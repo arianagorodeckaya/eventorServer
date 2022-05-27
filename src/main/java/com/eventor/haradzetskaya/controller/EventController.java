@@ -108,14 +108,16 @@ public class EventController {
     void subscribeEvent(@RequestBody Event newEvent) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         User user = userService.getByEmail(auth.getName());
-        List<User> users = newEvent.getUsers();
-        if(newEvent.getUsers()==null){
+        Event event = eventService.getById(newEvent.getId());
+        List<User> users = event.getUsers();
+        if(event.getUsers()==null){
             users=new ArrayList<>();
             users.add(user);
         }
         else
             users.add(user);
-        eventService.saveEvent(newEvent);
+        event.setUsers(users);
+        eventService.saveEvent(event);
     }
 
     @PutMapping
