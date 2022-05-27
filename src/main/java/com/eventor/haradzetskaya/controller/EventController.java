@@ -117,6 +117,7 @@ public class EventController {
         else
             users.add(user);
         event.setUsers(users);
+        user.getEvents().add(event);
         eventService.saveEvent(event);
     }
 
