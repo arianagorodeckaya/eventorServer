@@ -1,4 +1,4 @@
-package com.eventor.haradzetskaya.myEnum;
+package com.eventor.haradzetskaya.enums;
 
 public enum Role {
     ADMIN,

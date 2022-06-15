@@ -1,6 +1,6 @@
 package com.eventor.haradzetskaya.controller;
 
-import com.eventor.haradzetskaya.model.Event;
+import com.eventor.haradzetskaya.entity.Event;
 import com.eventor.haradzetskaya.service.EventService;
 import com.eventor.haradzetskaya.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;

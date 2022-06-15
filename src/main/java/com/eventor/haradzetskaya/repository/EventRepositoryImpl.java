@@ -1,6 +1,6 @@
 package com.eventor.haradzetskaya.repository;
 
-import com.eventor.haradzetskaya.model.Event;
+import com.eventor.haradzetskaya.entity.Event;
 import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;

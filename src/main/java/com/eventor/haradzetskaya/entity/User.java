@@ -1,9 +1,8 @@
-package com.eventor.haradzetskaya.model;
+package com.eventor.haradzetskaya.entity;
 
-import com.eventor.haradzetskaya.myEnum.Role;
+import com.eventor.haradzetskaya.enums.Role;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NonNull;
 
 import javax.persistence.*;
 import java.util.List;

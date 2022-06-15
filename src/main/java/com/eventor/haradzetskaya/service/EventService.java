@@ -1,7 +1,7 @@
 package com.eventor.haradzetskaya.service;
 
-import com.eventor.haradzetskaya.model.Event;
-import com.eventor.haradzetskaya.model.User;
+import com.eventor.haradzetskaya.entity.Event;
+import com.eventor.haradzetskaya.entity.User;
 import org.springframework.data.domain.Page;
 
 import java.util.List;

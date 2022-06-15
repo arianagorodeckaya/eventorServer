@@ -1,10 +1,8 @@
 package com.eventor.haradzetskaya.repository;
 
-import com.eventor.haradzetskaya.model.User;
+import com.eventor.haradzetskaya.entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-
-import java.util.List;
 
 public interface UserRepository {
 

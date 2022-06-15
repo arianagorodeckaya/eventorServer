@@ -1,8 +1,8 @@
 package com.eventor.haradzetskaya.service;
 
-import com.eventor.haradzetskaya.model.Event;
-import com.eventor.haradzetskaya.model.User;
-import com.eventor.haradzetskaya.myEnum.Role;
+import com.eventor.haradzetskaya.entity.Event;
+import com.eventor.haradzetskaya.entity.User;
+import com.eventor.haradzetskaya.enums.Role;
 import com.eventor.haradzetskaya.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;

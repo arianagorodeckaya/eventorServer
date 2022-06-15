@@ -1,4 +1,4 @@
-package com.eventor.haradzetskaya.model;
+package com.eventor.haradzetskaya.entity;
 
 
 import lombok.AllArgsConstructor;

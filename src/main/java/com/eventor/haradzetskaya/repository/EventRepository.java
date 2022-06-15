@@ -1,7 +1,6 @@
 package com.eventor.haradzetskaya.repository;
 
-import com.eventor.haradzetskaya.model.Event;
-import com.eventor.haradzetskaya.model.User;
+import com.eventor.haradzetskaya.entity.Event;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
