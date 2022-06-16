@@ -17,15 +17,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/event")
+@RequestMapping("/api/events")
 public class EventController {
     @Autowired
     EventService eventService;
     @Autowired
     UserService userService;
 
-    @GetMapping
-    public Event getEvent(@RequestParam int id) {
+    @GetMapping(path = "/{id}")
+    public Event getEvent(@PathVariable int id) {
         Event outEvent = this.eventService.getById(id);
         if(outEvent==null)
             throw new NotFoundException("Event with id not found - " + id);
@@ -35,7 +35,7 @@ public class EventController {
         return outEvent;
     }
 
-    @GetMapping(path = "/all/active")
+    @GetMapping(path = "/active")
     public List<Event> getAllActiveEvent() {
         List<Event> events = this.eventService.getActiveAndApprovedAll();
         for (Event event:events) {
@@ -83,8 +83,8 @@ public class EventController {
         return events;
     }
 
-    @GetMapping(path = "/subscribers")
-    public List<User> getSubscribersEvent(@RequestParam int id) {
+    @GetMapping(path = "/{id}/subscribers")
+    public List<User> getSubscribersEvent(@PathVariable int id) {
         List<User> subscribers = this.eventService.getById(id).getUsers();
         for (User user: subscribers) {
             user.setCreatorEvents(null);
@@ -104,11 +104,11 @@ public class EventController {
         return ResponseEntity.ok(new ErrorResponse(HttpStatus.OK.value(), "Event was added", System.currentTimeMillis()));
     }
 
-    @PostMapping(path = "/subscribe")
-    void subscribeEvent(@RequestBody Event newEvent) {
+    @PostMapping(path = "/{id}/subscribe")
+    void subscribeEvent(@PathVariable int id) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         User user = userService.getByEmail(auth.getName());
-        Event event = eventService.getById(newEvent.getId());
+        Event event = eventService.getById(id);
         List<User> users = event.getUsers();
         if(event.getUsers()==null){
             users=new ArrayList<>();
@@ -130,12 +130,12 @@ public class EventController {
         return newEvent;
     }
 
-    @DeleteMapping
-    ResponseEntity<?> deleteEvent(@RequestBody Event event) {
-        eventService.deleteEvent(event.getId());
-        if(eventService.getById(event.getId())!=null)
+    @DeleteMapping(path = "/{id}")
+    ResponseEntity<?> deleteEvent(@PathVariable int id) {
+        eventService.deleteEvent(id);
+        if(eventService.getById(id)!=null)
             return ResponseEntity.ok(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), "Event wasn't deleted", System.currentTimeMillis()));
-        return ResponseEntity.ok(new ErrorResponse(HttpStatus.OK.value(), "Event was deleted", System.currentTimeMillis()));
+        return ResponseEntity.ok("Event was deleted");
     }
 
 }

@@ -38,14 +38,14 @@ public class AdminController {
         return users;
     }
 
-    @DeleteMapping(path = "/user")
-    ResponseEntity<?> deleteUser(@RequestBody User user) {
-        userService.deleteUser(user.getId());
-        return ResponseEntity.ok(new ErrorResponse(HttpStatus.OK.value(), "User was deleted", System.currentTimeMillis()));
+    @DeleteMapping(path = "/users/{id}")
+    ResponseEntity<?> deleteUser(@PathVariable int id) {
+        userService.deleteUser(id);
+        return ResponseEntity.ok("User was deleted");
     }
 
-    @GetMapping(path = "/user")
-    User getUser(@RequestParam int id) {
+    @GetMapping(path = "/users/{id}")
+    User getUser(@PathVariable int id) {
         User outUser = userService.getById(id);
         outUser.setCreatorEvents(userService.setOnlyIdForUser(outUser));
         for (Event event : outUser.getEvents()) {
@@ -63,9 +63,9 @@ public class AdminController {
         return userService.saveUser(newUser);
     }
 
-    @PostMapping(path = "/approve")
-    Event approveEvent(@RequestBody Event event) {
-        Event oldEvent = eventService.getById(event.getId());
+    @PostMapping(path = "/approve/{id}")
+    Event approveEvent(@PathVariable int id) {
+        Event oldEvent = eventService.getById(id);
         oldEvent.setConfirmation(true);
         Event newEvent = eventService.saveEvent(oldEvent);
         newEvent.setUsers(this.eventService.setOnlyIdForUsers(newEvent));
@@ -73,9 +73,9 @@ public class AdminController {
         return newEvent;
     }
 
-    @PostMapping(path = "/decline")
-    Event declineEvent(@RequestBody Event event) {
-        Event oldEvent = eventService.getById(event.getId());
+    @PostMapping(path = "/decline//{id}")
+    Event declineEvent(@PathVariable int id) {
+        Event oldEvent = eventService.getById(id);
         oldEvent.setConfirmation(false);
         Event newEvent = eventService.saveEvent(oldEvent);
         newEvent.setUsers(this.eventService.setOnlyIdForUsers(newEvent));

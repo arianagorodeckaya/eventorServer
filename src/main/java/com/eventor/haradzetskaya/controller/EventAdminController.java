@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/admin/event")
+@RequestMapping("/api/admin/events")
 public class EventAdminController {
 
     @Autowired
@@ -49,7 +49,7 @@ public class EventAdminController {
         return events;
     }
 
-    @GetMapping(path = "/all")
+    @GetMapping
     public Page<Event> getAllEvents(@RequestParam(defaultValue = "0") int page) {
         Page<Event> events = this.eventService.getAllEvents(page);
         for (Event event:events) {

@@ -15,14 +15,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/user")
+@RequestMapping("/api/users")
 public class UserController {
     @Autowired
     UserService userService;
     @Autowired
     EventService eventService;
-    @Autowired
-    private PasswordEncoder passwordEncoder;
 
     @GetMapping
     public User getUser(@RequestParam int id) {
@@ -65,14 +63,6 @@ public class UserController {
         userService.deleteUser(user.getId());
         if(userService.getByEmail(email)!=null)
             return ResponseEntity.ok(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), "User wasn't deleted", System.currentTimeMillis()));
-        return ResponseEntity.ok(new ErrorResponse(HttpStatus.OK.value(), "User was deleted", System.currentTimeMillis()));
-    }
-
-    @DeleteMapping
-    ResponseEntity<?>  deleteUser(@RequestBody User user) {
-        userService.deleteUser(user.getId());
-        if(userService.getById(user.getId())!=null)
-            return ResponseEntity.ok(new ErrorResponse(HttpStatus.BAD_REQUEST.value(), "User wasn't deleted", System.currentTimeMillis()));
-        return ResponseEntity.ok(new ErrorResponse(HttpStatus.OK.value(), "User was deleted", System.currentTimeMillis()));
+        return ResponseEntity.ok("User was deleted");
     }
 }
