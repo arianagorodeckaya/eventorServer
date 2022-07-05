@@ -1,11 +1,14 @@
 package com.eventor.haradzetskaya.entity;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -13,6 +16,7 @@ import java.util.List;
 @Table(name = "event")
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 public class Event {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -51,14 +55,20 @@ public class Event {
     @Column(name = "confirmation")
     private Boolean confirmation;
 
-    @ManyToMany(mappedBy = "events")
+    @ManyToMany(mappedBy = "events", cascade = {CascadeType.PERSIST,CascadeType.MERGE, CascadeType.DETACH, CascadeType.REFRESH})
+    @JsonIgnore
     private List<User> users;
 
-    @ManyToOne
+    @ManyToOne(cascade = {CascadeType.PERSIST,CascadeType.MERGE, CascadeType.DETACH, CascadeType.REFRESH})
     @JoinColumn(name = "creator_id")
+    @JsonIgnore
     private User creator;
 
-    public Event() {
+    public void addUser(User user){
 
+        if(users == null){
+            users = new ArrayList<>();
+        }
+        users.add(user);
     }
 }
