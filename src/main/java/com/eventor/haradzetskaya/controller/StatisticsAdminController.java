@@ -25,7 +25,6 @@ public class StatisticsAdminController {
         Long paid = eventService.getCountPaid();
         prices.put("Free", free);
         prices.put("Paid", paid);
-        System.out.println(prices);
         return prices;
     }
 
