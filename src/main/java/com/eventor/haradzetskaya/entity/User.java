@@ -1,16 +1,20 @@
 package com.eventor.haradzetskaya.entity;
 
 import com.eventor.haradzetskaya.enums.Role;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Table(name = "user")
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 public class User {
 
     @Id
@@ -41,23 +45,21 @@ public class User {
     private Role role;
 
     @Column(name = "pw_hash", nullable = false)
-    private String pw_hash;
+    private String pwHash;
 
-    @OneToMany(mappedBy = "creator", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "creator", cascade = {CascadeType.PERSIST,CascadeType.MERGE, CascadeType.DETACH, CascadeType.REFRESH})
+    @JsonIgnore
     private List<Event> creatorEvents;
 
-
-    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @ManyToMany(cascade = {CascadeType.PERSIST,CascadeType.MERGE, CascadeType.DETACH, CascadeType.REFRESH})
+    @JsonIgnore
     @JoinTable(
             name = "user_event",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "event_id"))
     private List<Event> events;
 
-    public User() {
-    }
-
-    public User(String name, String email, String phone, String work, String birthday, String photo, Role role, String pw_hash) {
+    public User(String name, String email, String phone, String work, String birthday, String photo, Role role, String pwHash) {
         this.name = name;
         this.email = email;
         this.phone = phone;
@@ -65,8 +67,24 @@ public class User {
         this.birthday = birthday;
         this.photo = photo;
         this.role = role;
-        this.pw_hash = pw_hash;
+        this.pwHash = pwHash;
     }
 
+    public void addCreatorEvent(Event event){
+
+        if(events == null){
+            events = new ArrayList<>();
+        }
+        events.add(event);
+        event.setCreator(this);
+    }
+
+    public void addEvents(Event event){
+
+        if(events == null){
+            events = new ArrayList<>();
+        }
+        events.add(event);
+    }
 
 }
