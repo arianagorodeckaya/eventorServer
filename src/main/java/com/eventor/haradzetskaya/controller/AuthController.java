@@ -1,10 +1,8 @@
 package com.eventor.haradzetskaya.controller;
 
-import com.eventor.haradzetskaya.exceptionHandler.EmailAlreadyExistException;
-import com.eventor.haradzetskaya.model.ErrorResponse;
-import com.eventor.haradzetskaya.model.JwtRequest;
-import com.eventor.haradzetskaya.model.JwtResponse;
 import com.eventor.haradzetskaya.entity.User;
+import com.eventor.haradzetskaya.exceptionHandler.EmailAlreadyExistException;
+import com.eventor.haradzetskaya.model.*;
 import com.eventor.haradzetskaya.enums.Role;
 import com.eventor.haradzetskaya.security.JwtTokenUtil;
 import com.eventor.haradzetskaya.service.UserService;
@@ -51,7 +49,7 @@ public class AuthController {
         }
         newUser.setRole(Role.USER);
         newUser.setId(0);
-        newUser.setPw_hash(passwordEncoder.encode(newUser.getPw_hash()));
+        newUser.setPwHash(passwordEncoder.encode(newUser.getPwHash()));
         userService.saveUser(newUser);
         return ResponseEntity.ok(new ErrorResponse(HttpStatus.OK.value(), "User was registered", System.currentTimeMillis()));
     }
