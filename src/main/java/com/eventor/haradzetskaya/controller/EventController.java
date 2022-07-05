@@ -1,7 +1,9 @@
 package com.eventor.haradzetskaya.controller;
 
 import com.eventor.haradzetskaya.exceptionHandler.NotFoundException;
-import com.eventor.haradzetskaya.model.ErrorResponse;
+import com.eventor.haradzetskaya.mapper.EventMapper;
+import com.eventor.haradzetskaya.mapper.UserMapper;
+import com.eventor.haradzetskaya.model.*;
 import com.eventor.haradzetskaya.entity.Event;
 import com.eventor.haradzetskaya.entity.User;
 import com.eventor.haradzetskaya.service.EventService;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/events")
@@ -23,74 +26,51 @@ public class EventController {
     EventService eventService;
     @Autowired
     UserService userService;
+    @Autowired
+    EventMapper eventMapper;
+    @Autowired
+    UserMapper userMapper;
 
     @GetMapping(path = "/{id}")
-    public Event getEvent(@PathVariable int id) {
+    public EventDTO getEvent(@PathVariable int id) {
         Event outEvent = this.eventService.getById(id);
         if(outEvent==null)
             throw new NotFoundException("Event with id not found - " + id);
-        if(outEvent.getUsers()!=null)
-            outEvent.setUsers(this.eventService.setOnlyIdForUsers(outEvent));
-        outEvent.setCreator(this.eventService.setOnlyIdForCreator(outEvent.getCreator()));
-        return outEvent;
+        return eventMapper.toDto(outEvent);
     }
 
     @GetMapping(path = "/active")
-    public List<Event> getAllActiveEvent() {
+    public List<EventDTO> getAllActiveEvent() {
         List<Event> events = this.eventService.getActiveAndApprovedAll();
-        for (Event event:events) {
-            if(event.getUsers()!=null)
-                event.setUsers(this.eventService.setOnlyIdForUsers(event));
-            event.setCreator(eventService.setOnlyIdForCreator(event.getCreator()));
-        }
-        return events;
+        return events.stream().map(eventMapper::toDto).collect(Collectors.toList());
     }
 
     @GetMapping(path = "/my/active")
-    public List<Event> getMyActiveEvent() {
+    public List<EventDTO> getMyActiveEvent() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         List<Event> events = this.eventService.getMyActiveAll(auth.getName());
-        for (Event event:events) {
-            if(event.getUsers()!=null)
-                event.setUsers(this.eventService.setOnlyIdForUsers(event));
-            event.setCreator(eventService.setOnlyIdForCreator(event.getCreator()));
-        }
-        return events;
+        return events.stream().map(eventMapper::toDto).collect(Collectors.toList());
     }
 
     @GetMapping(path = "/my/expired")
-    public List<Event> getMyExpiredEvent() {
+    public List<EventDTO> getMyExpiredEvent() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         List<Event> events = this.eventService.getMyExpiredAll(auth.getName());
-        for (Event event:events) {
-            if(event.getUsers()!=null)
-                event.setUsers(this.eventService.setOnlyIdForUsers(event));
-            event.setCreator(eventService.setOnlyIdForCreator(event.getCreator()));
-        }
-        return events;
+        return events.stream().map(eventMapper::toDto).collect(Collectors.toList());
     }
 
     @GetMapping(path = "/subscriptions")
-    public List<Event> getMySubscriptions() {
+    public List<EventDTO> getMySubscriptions() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         User myUser = this.userService.getByEmail(auth.getName());
         List<Event> events = myUser.getEvents();
-        for (Event event:events) {
-            if(event.getUsers()!=null)
-                event.setUsers(this.eventService.setOnlyIdForUsers(event));
-            event.setCreator(eventService.setOnlyIdForCreator(event.getCreator()));
-        }
-        return events;
+        return events.stream().map(eventMapper::toDto).collect(Collectors.toList());
     }
 
     @GetMapping(path = "/{id}/subscribers")
-    public List<User> getSubscribersEvent(@PathVariable int id) {
+    public List<UserDTO> getSubscribersEvent(@PathVariable int id) {
         List<User> subscribers = this.eventService.getById(id).getUsers();
-        for (User user: subscribers) {
-            user.setCreatorEvents(null);
-            user.setEvents(null);
-        }
-        return subscribers;
+        return subscribers.stream().map(userMapper::toDto).collect(Collectors.toList());
     }
 
     @PostMapping
@@ -100,6 +80,7 @@ public class EventController {
         newEvent.setId(0);
         newEvent.setCreator(user);
         newEvent.setArchive(false);
+        newEvent.setUsers(new ArrayList<>());
         eventService.saveEvent(newEvent);
         return ResponseEntity.ok(new ErrorResponse(HttpStatus.OK.value(), "Event was added", System.currentTimeMillis()));
     }
@@ -109,25 +90,14 @@ public class EventController {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         User user = userService.getByEmail(auth.getName());
         Event event = eventService.getById(id);
-        List<User> users = event.getUsers();
-        if(event.getUsers()==null){
-            users=new ArrayList<>();
-            users.add(user);
-        }
-        else
-            users.add(user);
-        event.setUsers(users);
-        user.getEvents().add(event);
+        user.addEvents(event);
         eventService.saveEvent(event);
     }
 
     @PutMapping
-    Event updateEvent(@RequestBody Event event) {
-        Event newEvent = eventService.saveEvent(event);
-        if(newEvent.getUsers()!=null)
-            newEvent.setUsers(this.eventService.setOnlyIdForUsers(newEvent));
-        newEvent.setCreator(this.eventService.setOnlyIdForCreator(newEvent.getCreator()));
-        return newEvent;
+    EventDTO updateEvent(@RequestBody EventDTO eventDTO) {
+        Event newEvent = eventService.saveEvent(eventMapper.toEvent(eventDTO));
+        return eventMapper.toDto(newEvent);
     }
 
     @DeleteMapping(path = "/{id}")

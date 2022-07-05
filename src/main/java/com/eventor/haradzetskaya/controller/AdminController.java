@@ -1,17 +1,22 @@
 package com.eventor.haradzetskaya.controller;
 
-import com.eventor.haradzetskaya.model.ErrorResponse;
+import com.eventor.haradzetskaya.mapper.EventMapper;
+import com.eventor.haradzetskaya.mapper.UserMapper;
+import com.eventor.haradzetskaya.model.*;
 import com.eventor.haradzetskaya.entity.Event;
 import com.eventor.haradzetskaya.entity.User;
 import com.eventor.haradzetskaya.enums.Role;
 import com.eventor.haradzetskaya.service.EventService;
 import com.eventor.haradzetskaya.service.UserService;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.http.HttpStatus;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+
+import static java.util.stream.Collectors.toList;
 
 @RestController
 @RequestMapping("/api/admin")
@@ -23,19 +28,16 @@ public class AdminController {
     EventService eventService;
     @Autowired
     private PasswordEncoder passwordEncoder;
+    @Autowired
+    UserMapper userMapper;
+    @Autowired
+    EventMapper eventMapper;
 
 
     @GetMapping(path = "/users")
-    public Page<User> getAll(@RequestParam(defaultValue = "0") int page) {
+    public Page<UserDTO> getAll(@RequestParam(defaultValue = "0") int page) {
         Page<User> users = this.userService.getAll(page);
-        for (User user: users) {
-            user.setCreatorEvents(userService.setOnlyIdForUser(user));
-            for (Event event : user.getEvents()) {
-                event.setUsers(eventService.setOnlyIdForUsers(event));
-                event.setCreator(eventService.setOnlyIdForCreator(event.getCreator()));
-            }
-        }
-        return users;
+        return new PageImpl<>(users.stream().map(userMapper::toDto).collect(toList()));
     }
 
     @DeleteMapping(path = "/users/{id}")
@@ -45,41 +47,34 @@ public class AdminController {
     }
 
     @GetMapping(path = "/users/{id}")
-    User getUser(@PathVariable int id) {
+    UserDTO getUser(@PathVariable int id) {
         User outUser = userService.getById(id);
-        outUser.setCreatorEvents(userService.setOnlyIdForUser(outUser));
-        for (Event event : outUser.getEvents()) {
-            event.setUsers(this.eventService.setOnlyIdForUsers(event));
-            event.setCreator(this.eventService.setOnlyIdForCreator(event.getCreator()));
-        }
-        return outUser;
+        return userMapper.toDto(outUser);
     }
 
     @PostMapping(path = "/save")
-    User saveUser(@RequestBody User newUser) {
+    UserDTO saveUser(@RequestBody UserSecurityDTO newUser) {
+        ModelMapper modelMapper = new ModelMapper();
         newUser.setRole(Role.ADMIN);
         newUser.setId(0);
-        newUser.setPw_hash(passwordEncoder.encode(newUser.getPw_hash()));
-        return userService.saveUser(newUser);
+        newUser.setPwHash(passwordEncoder.encode(newUser.getPwHash()));
+        return userMapper.toDto(modelMapper.map(newUser, User.class));
+
     }
 
     @PostMapping(path = "/approve/{id}")
-    Event approveEvent(@PathVariable int id) {
+    EventDTO approveEvent(@PathVariable int id) {
         Event oldEvent = eventService.getById(id);
         oldEvent.setConfirmation(true);
         Event newEvent = eventService.saveEvent(oldEvent);
-        newEvent.setUsers(this.eventService.setOnlyIdForUsers(newEvent));
-        newEvent.setCreator(this.eventService.setOnlyIdForCreator(newEvent.getCreator()));
-        return newEvent;
+        return eventMapper.toDto(newEvent);
     }
 
-    @PostMapping(path = "/decline//{id}")
-    Event declineEvent(@PathVariable int id) {
+    @PostMapping(path = "/decline/{id}")
+    EventDTO declineEvent(@PathVariable int id) {
         Event oldEvent = eventService.getById(id);
         oldEvent.setConfirmation(false);
         Event newEvent = eventService.saveEvent(oldEvent);
-        newEvent.setUsers(this.eventService.setOnlyIdForUsers(newEvent));
-        newEvent.setCreator(this.eventService.setOnlyIdForCreator(newEvent.getCreator()));
-        return newEvent;
+        return eventMapper.toDto(newEvent);
     }
 }

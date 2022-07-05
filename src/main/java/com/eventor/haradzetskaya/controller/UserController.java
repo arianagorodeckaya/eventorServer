@@ -1,9 +1,12 @@
 package com.eventor.haradzetskaya.controller;
 
 import com.eventor.haradzetskaya.exceptionHandler.NotFoundException;
+import com.eventor.haradzetskaya.mapper.UserMapper;
+import com.eventor.haradzetskaya.mapper.UserSecurityMapper;
 import com.eventor.haradzetskaya.model.ErrorResponse;
-import com.eventor.haradzetskaya.entity.Event;
 import com.eventor.haradzetskaya.entity.User;
+import com.eventor.haradzetskaya.model.UserDTO;
+import com.eventor.haradzetskaya.model.UserSecurityDTO;
 import com.eventor.haradzetskaya.service.EventService;
 import com.eventor.haradzetskaya.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +14,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -21,38 +23,31 @@ public class UserController {
     UserService userService;
     @Autowired
     EventService eventService;
+    @Autowired
+    UserMapper userMapper;
+    @Autowired
+    UserSecurityMapper userSecurityMapper;
 
     @GetMapping
-    public User getUser(@RequestParam int id) {
-        User outUser;
-        outUser = this.userService.getById(id);
+    public UserDTO getUser(@RequestParam int id) {
+        User outUser = this.userService.getById(id);
         if (outUser == null) {
             throw new NotFoundException("User with id not found - " + id);
         }
-        outUser.setCreatorEvents(userService.setOnlyIdForUser(outUser));
-        for (Event event : outUser.getEvents()) {
-            event.setUsers(this.eventService.setOnlyIdForUsers(event));
-            event.setCreator(this.eventService.setOnlyIdForCreator(event.getCreator()));
-        }
-
-        return outUser;
+        return userMapper.toDto(outUser);
     }
 
     @GetMapping(path = "/me")
-    public User getMyUser() {
+    public UserSecurityDTO getMyUser() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         User user = userService.getByEmail(auth.getName());
-        user.setCreatorEvents(userService.setOnlyIdForUser(user));
-        for (Event event : user.getEvents()) {
-            event.setUsers(this.eventService.setOnlyIdForUsers(event));
-            event.setCreator(eventService.setOnlyIdForCreator(event.getCreator()));
-        }
-        return user;
+        return userSecurityMapper.toDto(user);
     }
 
     @PutMapping
-    User updateUser(@RequestBody User user) {
-        return userService.saveUser(user);
+    UserDTO updateUser(@RequestBody UserSecurityDTO userSecurityDTO) {
+        User newUser = userService.saveUser(userSecurityMapper.toUser(userSecurityDTO));
+        return userMapper.toDto(newUser);
     }
 
     @DeleteMapping(path = "/me")
