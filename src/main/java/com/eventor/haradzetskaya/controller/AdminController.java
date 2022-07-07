@@ -3,7 +3,6 @@ package com.eventor.haradzetskaya.controller;
 import com.eventor.haradzetskaya.mapper.EventMapper;
 import com.eventor.haradzetskaya.mapper.UserMapper;
 import com.eventor.haradzetskaya.model.*;
-import com.eventor.haradzetskaya.entity.Event;
 import com.eventor.haradzetskaya.entity.User;
 import com.eventor.haradzetskaya.enums.Role;
 import com.eventor.haradzetskaya.service.EventService;
@@ -52,7 +51,7 @@ public class AdminController {
         return userMapper.toDto(outUser);
     }
 
-    @PostMapping(path = "/save")
+    @PostMapping
     UserDTO saveUser(@RequestBody UserSecurityDTO newUser) {
         ModelMapper modelMapper = new ModelMapper();
         newUser.setRole(Role.ADMIN);
@@ -60,21 +59,5 @@ public class AdminController {
         newUser.setPwHash(passwordEncoder.encode(newUser.getPwHash()));
         return userMapper.toDto(modelMapper.map(newUser, User.class));
 
-    }
-
-    @PostMapping(path = "/approve/{id}")
-    EventDTO approveEvent(@PathVariable int id) {
-        Event oldEvent = eventService.getById(id);
-        oldEvent.setConfirmation(true);
-        Event newEvent = eventService.saveEvent(oldEvent);
-        return eventMapper.toDto(newEvent);
-    }
-
-    @PostMapping(path = "/decline/{id}")
-    EventDTO declineEvent(@PathVariable int id) {
-        Event oldEvent = eventService.getById(id);
-        oldEvent.setConfirmation(false);
-        Event newEvent = eventService.saveEvent(oldEvent);
-        return eventMapper.toDto(newEvent);
     }
 }

@@ -8,10 +8,7 @@ import com.eventor.haradzetskaya.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.stream.Collectors;
 
@@ -27,28 +24,34 @@ public class EventAdminController {
     @Autowired
     EventMapper eventMapper;
 
-    @GetMapping(path = "/confirmed")
-    public Page<EventDTO> getAllConfirmedEvents(@RequestParam(defaultValue = "0") int page) {
-        Page<Event> events = this.eventService.getConfirmedAll(page);
-        return new PageImpl<>(events.stream().map(eventMapper::toDto).collect(Collectors.toList()));
-    }
-
-    @GetMapping(path = "/unconfirmed")
-    public Page<EventDTO> getAllUnconfirmedEvents(@RequestParam(defaultValue = "0") int page) {
-        Page<Event> events = this.eventService.getUnconfirmedAll(page);
-        return new PageImpl<>(events.stream().map(eventMapper::toDto).collect(Collectors.toList()));
-    }
-
-    @GetMapping(path = "/nullconfirmed")
-    public Page<EventDTO> getAllNullConfirmedEvents(@RequestParam(defaultValue = "0") int page) {
-        Page<Event> events = this.eventService.getNullConfirmedEvents(page);
-        return new PageImpl<>(events.stream().map(eventMapper::toDto).collect(Collectors.toList()));
-    }
-
     @GetMapping
-    public Page<EventDTO> getAllEvents(@RequestParam(defaultValue = "0") int page) {
-        Page<Event> events = this.eventService.getAllEvents(page);
+    public Page<EventDTO> getEvents(@RequestParam(required = false) String confirmation, @RequestParam(defaultValue = "0") int page) {
+        Page<Event> events;
+        if (confirmation!=null) {
+            events = this.eventService.getByConfirmation(confirmation,page);
+        }
+        else
+            events = this.eventService.getAllEvents(page);
         return new PageImpl<>(events.stream().map(eventMapper::toDto).collect(Collectors.toList()));
+    }
+
+    @PostMapping(path = "/{id}")
+    EventDTO approveEvent(@PathVariable int id, @RequestParam String approve) {
+        Event oldEvent = eventService.getById(id);
+        Event newEvent;
+        switch (approve) {
+            case "yes":
+                oldEvent.setConfirmation(true);
+                newEvent = eventService.saveEvent(oldEvent);
+                break;
+            case "no":
+                oldEvent.setConfirmation(false);
+                newEvent = eventService.saveEvent(oldEvent);
+                break;
+            default:
+                newEvent = oldEvent;
+        }
+        return eventMapper.toDto(newEvent);
     }
 
 }
