@@ -1,8 +1,8 @@
 package com.eventor.haradzetskaya.service;
 
-import com.eventor.haradzetskaya.entity.Event;
 import com.eventor.haradzetskaya.entity.User;
 import com.eventor.haradzetskaya.enums.Role;
+import com.eventor.haradzetskaya.mapper.UserMapper;
 import com.eventor.haradzetskaya.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -26,6 +26,8 @@ public class UserServiceImpl implements UserService {
     private PasswordEncoder passwordEncoder;
     @Autowired
     EventService eventService;
+    @Autowired
+    UserMapper userMapper;
 
     @Override
     public Page<User> getAll(int page) {
@@ -40,7 +42,13 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User getById(int id) {
-        return this.userRepository.findById(id);
+        Optional<User> userOptional = this.userRepository.findById(id);
+        User user = null;
+        if (userOptional.isPresent())
+            user = userOptional.get();
+        else
+            throw new RuntimeException("User with id = " + user.getId() + " not found");
+        return user;
     }
 
     @Override
@@ -49,7 +57,7 @@ public class UserServiceImpl implements UserService {
         if (Objects.isNull(u)) {
             throw new UsernameNotFoundException(String.format("User %s is not found", login));
         }
-        return new org.springframework.security.core.userdetails.User(u.getEmail(), u.getPw_hash(), getGrantedAuthority(u));
+        return new org.springframework.security.core.userdetails.User(u.getEmail(), u.getPwHash(), getGrantedAuthority(u));
     }
 
     private Collection<GrantedAuthority> getGrantedAuthority(User user){
@@ -64,60 +72,26 @@ public class UserServiceImpl implements UserService {
     @Override
     public User saveUser(User user) {
         if(user.getId()!=0){
-            User oldUser = userRepository.findById(user.getId());
-            oldUser.setName(user.getName());
-            if (oldUser.getPw_hash().equals(passwordEncoder.encode(user.getPw_hash())))
-                oldUser.setPw_hash(user.getPw_hash());
-            else
-                oldUser.setPw_hash(passwordEncoder.encode(user.getPw_hash()));
-            oldUser.setPw_hash(user.getPw_hash());
-            oldUser.setEmail(user.getEmail());
-            oldUser.setBirthday(user.getBirthday());
-            oldUser.setPhone(user.getPhone());
-            oldUser.setPhoto(user.getPhoto());
-            oldUser.setWork(user.getWork());
-            user = oldUser;
+            Optional<User> userOptional = userRepository.findById(user.getId());
+            if(!userOptional.isPresent()){
+                throw new RuntimeException("User with id = "+user.getId()+" not found");
+            }
+            User oldUser = userOptional.get();
+            if (!passwordEncoder.matches(oldUser.getPwHash(), user.getPwHash()))
+                    user.setPwHash(passwordEncoder.encode(user.getPwHash()));
         }
-        userRepository.saveUser(user);
-        user.setCreatorEvents(null);
-        user.setEvents(null);
+        userRepository.save(user);
         return user;
     }
 
     @Override
     public void deleteUser(int id) {
-        userRepository.deleteUser(id);
+        userRepository.deleteById(id);
 
-    }
-
-    @Override
-    public User getByLoginAndPassword(String email, String password) {
-        User user = getByEmail(email);
-        if (user != null) {
-            if (passwordEncoder.matches(password, user.getPw_hash())) {
-                return user;
-            }
-        }
-        return null;
-    }
-
-    @Override
-    public List<Event> setOnlyIdForUser(User user) {
-        List<Event> events = user.getCreatorEvents();
-        List<Event> newEvents = new ArrayList<>();
-        for (Event event: events){
-            int id = event.getCreator().getId();
-            User newUser = new User();
-            newUser.setId(id);
-            event.setCreator(newUser);
-            event.setUsers(this.eventService.setOnlyIdForUsers(event));
-            newEvents.add(event);
-        }
-        return newEvents;
     }
 
     @Override
     public Long getCountUsers() {
-        return userRepository.countUsers();
+        return userRepository.count();
     }
 }
