@@ -39,23 +39,26 @@ public class EventController {
         return eventMapper.toDto(outEvent);
     }
 
+    @GetMapping("/my")
+    public List<EventDTO> getMyEventByStatus(@RequestParam(required = false) String status) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        List<Event> events = null;
+        if(status!=null) {
+            switch (status) {
+                case "active":
+                    events = this.eventService.getMyActiveAll(auth.getName());
+                    break;
+                case "expired":
+                    events = this.eventService.getMyExpiredAll(auth.getName());
+                    break;
+            }
+        }
+        return events.stream().map(eventMapper::toDto).collect(Collectors.toList());
+    }
+
     @GetMapping(path = "/active")
     public List<EventDTO> getAllActiveEvent() {
         List<Event> events = this.eventService.getActiveAndApprovedAll();
-        return events.stream().map(eventMapper::toDto).collect(Collectors.toList());
-    }
-
-    @GetMapping(path = "/my/active")
-    public List<EventDTO> getMyActiveEvent() {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        List<Event> events = this.eventService.getMyActiveAll(auth.getName());
-        return events.stream().map(eventMapper::toDto).collect(Collectors.toList());
-    }
-
-    @GetMapping(path = "/my/expired")
-    public List<EventDTO> getMyExpiredEvent() {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        List<Event> events = this.eventService.getMyExpiredAll(auth.getName());
         return events.stream().map(eventMapper::toDto).collect(Collectors.toList());
     }
 
@@ -85,6 +88,8 @@ public class EventController {
         return ResponseEntity.ok(new ErrorResponse(HttpStatus.OK.value(), "Event was added", System.currentTimeMillis()));
     }
 
+    ///!!!!!!!!!!!!!!!!!!
+    //??почему без user.getEvents().add(event); ене работает
     @PostMapping(path = "/{id}/subscribe")
     void subscribeEvent(@PathVariable int id) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
