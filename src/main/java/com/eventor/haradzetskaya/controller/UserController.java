@@ -28,8 +28,8 @@ public class UserController {
     @Autowired
     UserSecurityMapper userSecurityMapper;
 
-    @GetMapping
-    public UserDTO getUser(@RequestParam int id) {
+    @GetMapping(path = "/{id}")
+    public UserDTO getUser(@PathVariable int id) {
         User outUser = this.userService.getById(id);
         if (outUser == null) {
             throw new NotFoundException("User with id not found - " + id);
